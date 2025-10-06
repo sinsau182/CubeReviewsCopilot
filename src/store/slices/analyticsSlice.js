@@ -5,7 +5,7 @@ export const fetchAnalytics = createAsyncThunk(
   'analytics/fetchAnalytics',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch('http://localhost:8000/analytics', {
+      const response = await fetch('http://13.53.214.127:8000/analytics', {
         method: 'GET',
         headers: {
           'x-api-key': 'your-api-key',
