@@ -140,7 +140,7 @@ export default function SearchPage() {
               </h2>
               {lastSearchQuery && (
                 <p className="text-sm text-gray-600 mt-1">
-                  Results for: "{lastSearchQuery}" 
+                  Results for: &quot;{lastSearchQuery}&quot; 
                   {searchDuration && (
                     <span className="ml-2">({searchDuration}ms)</span>
                   )}
