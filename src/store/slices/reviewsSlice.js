@@ -57,7 +57,6 @@ export const fetchReviewById = createAsyncThunk(
   }
 );
 
-
 // Async thunk for suggesting reply to a review
 export const suggestReply = createAsyncThunk(
   'reviews/suggestReply',
