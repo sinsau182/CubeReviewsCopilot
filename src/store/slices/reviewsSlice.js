@@ -14,7 +14,7 @@ export const fetchReviews = createAsyncThunk(
       if (sentiment) params.append('sentiment', sentiment);
       if (q) params.append('q', q);
 
-      const response = await fetch(`http://13.53.214.127:8000/reviews?${params}`, {
+      const response = await fetch(`http://localhost:8000/reviews?${params}`, {
         method: 'GET',
         headers: {
           'x-api-key': 'your-api-key',
@@ -38,7 +38,7 @@ export const fetchReviewById = createAsyncThunk(
   'reviews/fetchReviewById',
   async (id, { rejectWithValue }) => {
     try {
-      const response = await fetch(`http://13.53.214.127:8000/reviews/${id}`, {
+      const response = await fetch(`http://localhost:8000/reviews/${id}`, {
         method: 'GET',
         headers: {
           'x-api-key': 'your-api-key',
@@ -62,7 +62,7 @@ export const suggestReply = createAsyncThunk(
   'reviews/suggestReply',
   async (id, { rejectWithValue }) => {
     try {
-      const response = await fetch(`http://13.53.214.127:8000/reviews/${id}/suggest-reply`, {
+      const response = await fetch(`http://localhost:8000/reviews/${id}/suggest-reply`, {
         method: 'POST',
         headers: {
           'x-api-key': 'your-api-key',

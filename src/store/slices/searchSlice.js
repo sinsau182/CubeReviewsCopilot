@@ -10,7 +10,7 @@ export const searchSimilarReviews = createAsyncThunk(
         k: k.toString(),
       });
 
-      const response = await fetch(`http://13.53.214.127:8000/search?${params}`, {
+      const response = await fetch(`http://localhost:8000/search?${params}`, {
         method: 'GET',
         headers: {
           'x-api-key': 'your-api-key',

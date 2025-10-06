@@ -5,7 +5,7 @@ export const uploadReviews = createAsyncThunk(
   'ingest/uploadReviews',
   async (reviewsData, { rejectWithValue }) => {
     try {
-      const response = await fetch('http://13.53.214.127:8000/ingest', {
+      const response = await fetch('http://localhost:8000/ingest', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
