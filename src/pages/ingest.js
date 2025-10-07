@@ -29,7 +29,7 @@ export default function Ingest() {
       const result = await dispatch(uploadReviews(reviewsArray));
       
       if (uploadReviews.fulfilled.match(result)) {
-        toast.success(`Successfully uploaded ${reviewsArray.length} reviews!`);
+        toast.success(`Successfully uploaded reviews!`);
       }
     } catch (error) {
       toast.error('Invalid JSON format. Please check your data.');
@@ -125,7 +125,7 @@ export default function Ingest() {
               <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center space-x-2">
                 <CheckCircle className="w-5 h-5 text-green-600" />
                 <span className="text-green-800">
-                  Successfully uploaded {uploadedCount} reviews!
+                  Successfully uploaded reviews!
                 </span>
               </div>
             )}

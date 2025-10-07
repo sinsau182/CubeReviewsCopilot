@@ -61,6 +61,44 @@ export default function Reviews() {
     reviewError
   } = useSelector((state) => state.reviews);
 
+  
+  const [availableLocations, setAvailableLocations] = useState([]);
+
+  // Fetch all unique locations from the backend
+  const fetchAllLocations = async () => {
+    try {
+      // Fetch a large number of reviews to get all unique locations
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/reviews?page=1&pagesize=1000`, {
+        method: 'GET',
+        headers: {
+          'x-api-key': process.env.NEXT_PUBLIC_X_API_KEY,
+        },
+      });
+
+      if (response.ok) {
+        const allReviews = await response.json();
+        // Extract unique locations
+        const locations = [...new Set(
+          allReviews
+            .map(review => review.location)
+            .filter(location => location && location.trim() !== '')
+        )].sort();
+        
+        setAvailableLocations(locations);
+        console.log('Fetched unique locations:', locations);
+      } else {
+        console.error('Failed to fetch locations');
+      }
+    } catch (error) {
+      console.error('Error fetching locations:', error);
+    }
+  };
+
+  // Fetch locations on component mount
+  useEffect(() => {
+    fetchAllLocations();
+  }, []);
+
   // Load reviews on component mount and when filters/pagination change
   useEffect(() => {
     const loadReviews = () => {
@@ -167,9 +205,11 @@ export default function Reviews() {
             style={{ color: '#000000' }}
           >
             <option value="all">All locations</option>
-            <option value="NYC">NYC</option>
-            <option value="LA">LA</option>
-            <option value="Chicago">Chicago</option>
+            {availableLocations.map((location) => (
+              <option key={location} value={location}>
+                {location}
+              </option>
+            ))}
           </select>
           <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
             <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

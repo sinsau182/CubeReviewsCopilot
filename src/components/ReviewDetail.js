@@ -64,11 +64,38 @@ export default function ReviewDetail({ review, onBack }) {
     }
   };
 
-  const handleCopyReply = () => {
+const handleCopyReply = async () => {
     const replyText = replyData?.reply || '';
-    navigator.clipboard.writeText(replyText);
-    toast.success('Reply copied to clipboard!');
-  };
+    
+    try {
+      // Try modern clipboard API first
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(replyText);
+        toast.success('Reply copied to clipboard!');
+      } else {
+        // Fallback method for older browsers or non-HTTPS environments
+        const textArea = document.createElement('textarea');
+        textArea.value = replyText;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        
+        try {
+          document.execCommand('copy');
+          toast.success('Reply copied to clipboard!');
+        } catch (err) {
+          toast.error('Failed to copy to clipboard');
+        } finally {
+          document.body.removeChild(textArea);
+        }
+      }
+    } catch (err) {
+      console.error('Copy failed:', err);
+      toast.error('Failed to copy to clipboard');
+    }
 
   const handleRegenerate = async () => {
     try {
@@ -96,12 +123,6 @@ export default function ReviewDetail({ review, onBack }) {
         <div className="flex items-center justify-between mb-4">
           <StarRating rating={review.rating} />
           <div className="flex items-center space-x-3">
-            <Badge className={getSentimentColor(review.ai_sentiment)} variant="outline">
-              {review.ai_sentiment}
-            </Badge>
-            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-              {review.ai_topic || 'General'}
-            </Badge>
           </div>
         </div>
 

@@ -5,11 +5,11 @@ export const uploadReviews = createAsyncThunk(
   'ingest/uploadReviews',
   async (reviewsData, { rejectWithValue }) => {
     try {
-      const response = await fetch('http://13.53.214.127:8000/ingest', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ingest`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-api-key': 'your-api-key',
+          'x-api-key': process.env.NEXT_PUBLIC_X_API_KEY,
         },
         body: JSON.stringify(reviewsData),
       });

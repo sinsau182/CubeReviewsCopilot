@@ -14,10 +14,10 @@ export const fetchReviews = createAsyncThunk(
       if (sentiment) params.append('sentiment', sentiment);
       if (q) params.append('q', q);
 
-      const response = await fetch(`http://13.53.214.127:8000/reviews?${params}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/reviews?${params}`, {
         method: 'GET',
         headers: {
-          'x-api-key': 'your-api-key',
+          'x-api-key': process.env.NEXT_PUBLIC_X_API_KEY,
         },
       });
 
@@ -26,7 +26,25 @@ export const fetchReviews = createAsyncThunk(
       }
 
       const result = await response.json();
-      return result;
+      
+      // Handle the response - your API returns an array directly
+      const reviews = Array.isArray(result) ? result : [];
+      
+      // Simple pagination logic:
+      // If we get fewer reviews than requested, we're likely on the last page
+      // This provides a good user experience without requiring backend changes
+      const hasNextPage = reviews.length === pagesize;
+      const estimatedTotal = hasNextPage 
+        ? (page * pagesize) + 1  // At least one more page
+        : (page - 1) * pagesize + reviews.length; // Exact count for last page
+      
+      return {
+        reviews,
+        totalReviews: estimatedTotal,
+        currentPage: page,
+        pageSize: pagesize,
+        hasNextPage
+      };
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -38,10 +56,10 @@ export const fetchReviewById = createAsyncThunk(
   'reviews/fetchReviewById',
   async (id, { rejectWithValue }) => {
     try {
-      const response = await fetch(`http://13.53.214.127:8000/reviews/${id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/reviews/${id}`, {
         method: 'GET',
         headers: {
-          'x-api-key': 'your-api-key',
+          'x-api-key': process.env.NEXT_PUBLIC_X_API_KEY,
         },
       });
 
@@ -62,10 +80,10 @@ export const suggestReply = createAsyncThunk(
   'reviews/suggestReply',
   async (id, { rejectWithValue }) => {
     try {
-      const response = await fetch(`http://13.53.214.127:8000/reviews/${id}/suggest-reply`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/reviews/${id}/suggest-reply`, {
         method: 'POST',
         headers: {
-          'x-api-key': 'your-api-key',
+          'x-api-key': process.env.NEXT_PUBLIC_X_API_KEY,
         },
       });
 
@@ -89,6 +107,7 @@ const reviewsSlice = createSlice({
     totalReviews: 0,
     currentPage: 1,
     pageSize: 20,
+    hasNextPage: false,
     isLoading: false,
     error: null,
     
@@ -160,8 +179,11 @@ const reviewsSlice = createSlice({
       })
       .addCase(fetchReviews.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.reviews = action.payload.reviews || action.payload;
-        state.totalReviews = action.payload.total || action.payload.length;
+        state.reviews = action.payload.reviews;
+        state.totalReviews = action.payload.totalReviews;
+        state.currentPage = action.payload.currentPage;
+        state.pageSize = action.payload.pageSize;
+        state.hasNextPage = action.payload.hasNextPage;
         state.error = null;
       })
       .addCase(fetchReviews.rejected, (state, action) => {

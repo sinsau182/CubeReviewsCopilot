@@ -34,20 +34,20 @@ export default function Dashboard() {
   }, [error]);
 
   // Transform data for charts
-  const sentimentData = Object.entries(sentimentDistribution).map(([name, value]) => ({
+  const sentimentData = Object.entries(sentimentDistribution || {}).map(([name, value]) => ({
     name,
     value,
     color: name === 'Positive' ? '#22C55E' : name === 'Negative' ? '#EF4444' : '#F59E0B'
   }));
 
-  const topicData = Object.entries(topicDistribution).map(([name, value], index) => ({
+  const topicData = Object.entries(topicDistribution || {}).map(([name, value], index) => ({
     name,
     value,
     color: '#8B5CF6',
     showTooltip: index === 0 // Show tooltip for first item
   }));
 
-  const locationData = Object.entries(locationBreakdown).map(([name, value]) => ({
+  const locationData = Object.entries(locationBreakdown || {}).map(([name, value]) => ({
     name,
     value,
     color: '#3B82F6'
