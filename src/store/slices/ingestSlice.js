@@ -15,7 +15,17 @@ export const uploadReviews = createAsyncThunk(
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        // Try to parse error details from response body
+        try {
+          const errorData = await response.json();
+          if (errorData.detail) {
+            return rejectWithValue(errorData.detail);
+          }
+          return rejectWithValue(`HTTP error! status: ${response.status}`);
+        } catch (parseError) {
+          // If JSON parsing fails, fall back to generic error
+          return rejectWithValue(`HTTP error! status: ${response.status}`);
+        }
       }
 
       const result = await response.json();
