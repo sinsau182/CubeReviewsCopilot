@@ -64,38 +64,30 @@ export default function ReviewDetail({ review, onBack }) {
     }
   };
 
-const handleCopyReply = async () => {
-    const replyText = replyData?.reply || '';
-    
+const handleCopyReply = () => {
+  const replyText = replyData?.reply || '';
+  
+  if (navigator.clipboard && window.isSecureContext) {
+    // HTTPS and modern browsers
+    navigator.clipboard.writeText(replyText);
+  } else {
+    // Fallback for HTTP: create a temporary textarea
+    const textArea = document.createElement("textarea");
+    textArea.value = replyText;
+    textArea.style.position = "fixed"; // avoid scrolling to bottom
+    textArea.style.opacity = "0";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
     try {
-      // Try modern clipboard API first
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        await navigator.clipboard.writeText(replyText);
-        toast.success('Reply copied to clipboard!');
-      } else {
-        // Fallback method for older browsers or non-HTTPS environments
-        const textArea = document.createElement('textarea');
-        textArea.value = replyText;
-        textArea.style.position = 'fixed';
-        textArea.style.left = '-999999px';
-        textArea.style.top = '-999999px';
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        
-        try {
-          document.execCommand('copy');
-          toast.success('Reply copied to clipboard!');
-        } catch (err) {
-          toast.error('Failed to copy to clipboard');
-        } finally {
-          document.body.removeChild(textArea);
-        }
-      }
+      document.execCommand('copy');
     } catch (err) {
-      console.error('Copy failed:', err);
-      toast.error('Failed to copy to clipboard');
+      console.error('Copy to clipboard failed', err);
     }
+    document.body.removeChild(textArea);
+  }
+  toast.success('Reply copied to clipboard!');
+};
 
   const handleRegenerate = async () => {
     try {
